@@ -14,7 +14,7 @@ connectToDB(process.env.MONGODB_URL)
     console.log("MongoDB connected!!!");
   })
   .catch((err) => console.error("MongoDB connection error:", err));
-  
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -42,3 +42,5 @@ app.get("/:shortId", async (req, res) => {
 
   res.redirect(entry.redirectURL);
 });
+
+export default app;
