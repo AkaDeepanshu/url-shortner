@@ -1,10 +1,17 @@
-const express = require("express");
-const path = require("path");
-const urlRoute = require("./routes/url");
-const statisRoute = require("./routes/staticRouter");
-const { connectToDB } = require("./connect");
-const URL = require("./models/url");
-require("dotenv").config();
+import express from "express";
+import path from "path";
+import { fileURLToPath } from "url";
+import dotenv from "dotenv";
+import urlRoute from "./routes/url.js";
+import statisRoute from "./routes/staticRouter.js";
+import { connectToDB } from "./connect.js";
+import URL from "./models/url.js";
+
+// ES modules don't have __dirname, so we need to create it
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config();
 
 const app = express();
 
@@ -20,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // ejs setup
 app.set("view engine", "ejs");
-app.set("views", path.resolve("./views"));
+app.set("views", path.resolve(__dirname, "views"));
 
 // routes
 app.use("/", statisRoute);
@@ -40,7 +47,15 @@ app.get("/:shortId", async (req, res) => {
     { new: true }
   );
 
+  if (!entry) {
+    return res.status(404).send("URL not found");
+  }
   res.redirect(entry.redirectURL);
+});
+
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => {
+  console.log(`Server started at Port: ${PORT}`);
 });
 
 export default app;

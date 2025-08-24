@@ -1,9 +1,9 @@
-const express = require('express')
+import express from 'express';
+import { handleGenerateShortURL, handleGetUrlAnalytics } from '../controllers/url.js';
+
 const router = express.Router();
-const {handleGenerateShortURL,handleGetUrlAnalytics} = require('../controllers/url')
 
-router.post('/',handleGenerateShortURL);
-router.get('/analytics/:shortId',handleGetUrlAnalytics);
+router.post('/', handleGenerateShortURL);
+router.get('/analytics/:shortId', handleGetUrlAnalytics);
 
-
-module.exports = router;
+export default router;
