@@ -167,16 +167,14 @@
         Transform your long URLs into short, manageable links
       </p>
 
-      <div
-        class="result-container"
-        id="resultContainer"
-      >
+      <div class="result-container" id="resultContainer">
         <div class="result-box">
           <div class="result-title">Your shortened URL is ready!</div>
           <div class="short-url">
-            <span class="url-text" id="shortUrl"
-              ><%= locals.clientUrl || 'http://localhost:8000' %><%= locals.id || '' %></span
-            >
+            <span class="url-text" id="shortUrl">
+              <%= (clientUrl || 'http://localhost:8000').replace(/\/$/, '')
+              %>/<%= id || '' %>
+            </span>
             <button class="copy-btn" onclick="copyToClipboard()">
               <i class="fas fa-copy"></i> Copy
             </button>
@@ -208,9 +206,9 @@
 
     <script>
       // Show result container if there's an ID
-      window.onload = function() {
+      window.onload = function () {
         const resultContainer = document.getElementById("resultContainer");
-        const hasId = document.body.getAttribute('data-has-id') === 'true';
+        const hasId = document.body.getAttribute("data-has-id") === "true";
         if (hasId) {
           resultContainer.style.display = "block";
         }
