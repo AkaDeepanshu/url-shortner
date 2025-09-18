@@ -172,8 +172,8 @@
           <div class="result-title">Your shortened URL is ready!</div>
           <div class="short-url">
             <span class="url-text" id="shortUrl">
-              <%= (clientUrl || 'http://localhost:8000').replace(/\/$/, '')
-              %>/<%= id || '' %>
+              <%= (locals.clientUrl || 'http://localhost:8000').replace(/\/$/, '')
+              %>/<%= locals.id || '' %>
             </span>
             <button class="copy-btn" onclick="copyToClipboard()">
               <i class="fas fa-copy"></i> Copy
