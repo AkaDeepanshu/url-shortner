@@ -7,9 +7,16 @@ import statisRoute from "./routes/staticRouter.js";
 import { connectToDB } from "./connect.js";
 import URL from "./models/url.js";
 
-// ES modules don't have dirname, so we need to create it
-const filename = fileURLToPath(import.meta.url);
-const dirname = path.dirname(filename);
+let dirname;
+
+try {
+  // Works in ESM (local)
+  const filename = fileURLToPath(import.meta.url);
+  dirname = path.dirname(filename);
+} catch {
+  // Fallback for Netlify’s CommonJS environment
+  dirname = path.resolve();
+}
 
 dotenv.config();
 
@@ -57,6 +64,5 @@ if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 8000;
   app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 }
-
 
 export default app;
