@@ -7,9 +7,9 @@ import statisRoute from "./routes/staticRouter.js";
 import { connectToDB } from "./connect.js";
 import URL from "./models/url.js";
 
-// ES modules don't have __dirname, so we need to create it
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// ES modules don't have dirname, so we need to create it
+const filename = fileURLToPath(import.meta.url);
+const dirname = path.dirname(filename);
 
 dotenv.config();
 
@@ -27,7 +27,7 @@ app.use(express.urlencoded({ extended: false }));
 
 // ejs setup
 app.set("view engine", "ejs");
-app.set("views", path.resolve(__dirname, "views"));
+app.set("views", path.resolve(dirname, "views"));
 
 // routes
 app.use("/", statisRoute);
@@ -53,9 +53,10 @@ app.get("/:shortId", async (req, res) => {
   res.redirect(entry.redirectURL);
 });
 
-const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
-  console.log(`Server started at Port: ${PORT}`);
-});
+if (process.env.NODE_ENV !== "production") {
+  const PORT = process.env.PORT || 8000;
+  app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+}
+
 
 export default app;
