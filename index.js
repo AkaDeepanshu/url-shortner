@@ -7,10 +7,13 @@ import URL from "./models/url.js";
 
 dotenv.config();
 
+/* -------------------------------------------------------------
+   Create Express app
+------------------------------------------------------------- */
 const app = express();
 
 /* -------------------------------------------------------------
-   Resolve dirname safely (works both locally and on Netlify)
+   Resolve dirname safely (works both locally & on Netlify)
 ------------------------------------------------------------- */
 let dirname;
 try {
@@ -31,22 +34,26 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve(dirname, "views"));
 
 /* -------------------------------------------------------------
-   Connect to MongoDB
-------------------------------------------------------------- */
-await connectToDB(process.env.MONGODB_URL)
-  .then(() => console.log("✅ MongoDB connected"))
-  .catch((err) => console.error("❌ MongoDB connection error:", err));
-
-/* -------------------------------------------------------------
-   Build a ready-to-use app
+   Function to create & return a ready Express app
 ------------------------------------------------------------- */
 export async function createApp() {
+  // Connect to MongoDB inside this async function (not top-level)
+  try {
+    await connectToDB(process.env.MONGODB_URL);
+    console.log("✅ MongoDB connected");
+  } catch (err) {
+    console.error("❌ MongoDB connection error:", err);
+  }
+
+  // Dynamic imports for routes (avoids early CJS bundling issues)
   const { default: urlRoute } = await import("./routes/url.js");
   const { default: staticRoute } = await import("./routes/staticRouter.js");
 
+  // Routes setup
   app.use("/", staticRoute);
   app.use("/url", urlRoute);
 
+  // Redirect handler for short URLs
   app.get("/:shortId", async (req, res) => {
     const shortId = req.params.shortId;
     try {
@@ -59,7 +66,7 @@ export async function createApp() {
       if (!entry) return res.status(404).send("URL not found");
       res.redirect(entry.redirectURL);
     } catch (err) {
-      console.error(err);
+      console.error("Redirect error:", err);
       res.status(500).send("Server error");
     }
   });
@@ -68,9 +75,13 @@ export async function createApp() {
 }
 
 /* -------------------------------------------------------------
-   Local dev server (won’t run on Netlify)
+   Local dev server (skipped on Netlify)
 ------------------------------------------------------------- */
 if (process.env.NODE_ENV !== "production") {
   const PORT = process.env.PORT || 8000;
-  app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+  connectToDB(process.env.MONGODB_URL)
+    .then(() => {
+      app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+    })
+    .catch((err) => console.error("MongoDB connection error:", err));
 }

@@ -5,9 +5,8 @@ let cachedHandler;
 
 export const handler = async (event, context) => {
   if (!cachedHandler) {
-    const app = await createApp(); // wait until Express app is fully ready
+    const app = await createApp();
     cachedHandler = serverless(app);
   }
-
   return cachedHandler(event, context);
 };

@@ -6,3 +6,6 @@ command = ""
 from = "/*"
 to = "/.netlify/functions/app"
 status = 200
+
+[functions]
+node_bundler = "esbuild"
