@@ -1,4 +1,13 @@
-import serverless from 'serverless-http';
-import app from '../../index.js';
+import serverless from "serverless-http";
+import { createApp } from "../../index.js";
 
-export const handler = serverless(app);
+let cachedHandler;
+
+export const handler = async (event, context) => {
+  if (!cachedHandler) {
+    const app = await createApp(); // wait until Express app is fully ready
+    cachedHandler = serverless(app);
+  }
+
+  return cachedHandler(event, context);
+};
