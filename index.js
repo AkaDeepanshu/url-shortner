@@ -2,10 +2,15 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import dotenv from "dotenv";
-import urlRoute from "./routes/url.js";
-import statisRoute from "./routes/staticRouter.js";
 import { connectToDB } from "./connect.js";
 import URL from "./models/url.js";
+
+import * as urlRouteImport from "./routes/url.js";
+import * as staticRouteImport from "./routes/staticRouter.js";
+
+const urlRoute = urlRouteImport.default || urlRouteImport;
+const staticRoute = staticRouteImport.default || staticRouteImport;
+
 
 let dirname;
 
@@ -37,7 +42,7 @@ app.set("view engine", "ejs");
 app.set("views", path.resolve(dirname, "views"));
 
 // routes
-app.use("/", statisRoute);
+app.use("/", staticRoute);
 app.use("/url", urlRoute);
 app.get("/:shortId", async (req, res) => {
   const shortId = req.params.shortId;
